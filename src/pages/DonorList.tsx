@@ -1,8 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Search, MapPin, Droplet, Phone, Calendar, User, AlertCircle } from 'lucide-react';
+import { Search, MapPin, Droplet, Phone, Calendar, User, AlertCircle, X, Navigation } from 'lucide-react';
 import { DIVISIONS, DISTRICTS } from '../lib/locations';
 import SearchableSelect from '../components/SearchableSelect';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+
+// Fix for default marker icon
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 interface Donor {
   id: number;
@@ -13,6 +28,8 @@ interface Donor {
   phone: string;
   last_donation_date: string;
   age: number;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 // Mock data to show if Supabase is not connected
@@ -31,6 +48,7 @@ export default function DonorList() {
   const [division, setDivision] = useState('');
   const [district, setDistrict] = useState('');
   const [isConnected, setIsConnected] = useState(true);
+  const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
 
   const availableDistricts = division ? DISTRICTS[division] : [];
 
@@ -197,14 +215,27 @@ export default function DonorList() {
                   </div>
                 </div>
 
-                <div className="mt-8">
+                <div className="mt-8 grid grid-cols-2 gap-4">
                   <a 
                     href={`tel:${donor.phone}`}
-                    className="w-full btn-secondary flex items-center justify-center gap-2 py-3"
+                    className="btn-secondary flex items-center justify-center gap-2 py-3 text-sm"
                   >
                     <Phone className="h-4 w-4" />
-                    যোগাযোগ করুন
+                    কল করুন
                   </a>
+                  {donor.latitude && donor.longitude ? (
+                    <button 
+                      onClick={() => setSelectedDonor(donor)}
+                      className="btn-primary flex items-center justify-center gap-2 py-3 text-sm"
+                    >
+                      <Navigation className="h-4 w-4" />
+                      লোকেশন
+                    </button>
+                  ) : (
+                    <div className="flex items-center justify-center text-[10px] text-gray-400 font-medium border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+                      লোকেশন নেই
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -219,6 +250,63 @@ export default function DonorList() {
               <p className="text-gray-500 dark:text-gray-400 font-medium">অন্য কোনো এলাকা বা গ্রুপ দিয়ে চেষ্টা করুন</p>
             </div>
           )}
+        </div>
+      )}
+      {/* Donor Location Modal */}
+      {selectedDonor && selectedDonor.latitude && selectedDonor.longitude && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
+            <button 
+              onClick={() => setSelectedDonor(null)}
+              className="absolute top-6 right-6 z-[110] bg-white dark:bg-slate-900 p-2 rounded-full shadow-lg hover:scale-110 transition-transform"
+            >
+              <X className="h-6 w-6 text-gray-500" />
+            </button>
+
+            <div className="p-8 pb-0">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-brand-light dark:bg-brand/10 flex items-center justify-center">
+                  <MapPin className="h-6 w-6 text-brand" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-gray-900 dark:text-white">{selectedDonor.name} এর লোকেশন</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{selectedDonor.district}, {selectedDonor.division}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-[400px] w-full p-4">
+              <div className="h-full w-full rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-700">
+                <MapContainer 
+                  center={[selectedDonor.latitude, selectedDonor.longitude]} 
+                  zoom={15} 
+                  className="h-full w-full"
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker position={[selectedDonor.latitude, selectedDonor.longitude]}>
+                    <Popup>
+                      <div className="text-center font-bold">
+                        {selectedDonor.name}<br/>
+                        <span className="text-brand">{selectedDonor.blood_group}</span>
+                      </div>
+                    </Popup>
+                  </Marker>
+                </MapContainer>
+              </div>
+            </div>
+
+            <div className="p-8 pt-4 flex justify-end">
+              <button 
+                onClick={() => setSelectedDonor(null)}
+                className="btn-secondary px-8"
+              >
+                বন্ধ করুন
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
