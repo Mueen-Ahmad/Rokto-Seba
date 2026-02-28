@@ -19,6 +19,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-gray-700 hover:text-red-600 font-medium">হোম (Home)</Link>
             <Link to="/donors" className="text-gray-700 hover:text-red-600 font-medium">রক্তদাতা খুঁজুন (Search)</Link>
+            <Link to="/emergency" className="text-red-600 hover:text-red-700 font-bold">জরুরী (Emergency)</Link>
             <Link to="/register" className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-medium transition-colors">
               রক্তদাতা হন (Join)
             </Link>
@@ -42,7 +43,10 @@ export default function Navbar() {
             <Link to="/donors" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-md font-medium">
               রক্তদাতা খুঁজুন (Search)
             </Link>
-            <Link to="/register" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-red-600 font-medium">
+            <Link to="/emergency" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-red-600 hover:bg-red-50 rounded-md font-bold">
+              জরুরী (Emergency)
+            </Link>
+            <Link to="/register" onClick={() => setIsOpen(false)} className="block px-3 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-md font-medium">
               রক্তদাতা হন (Join)
             </Link>
           </div>

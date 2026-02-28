@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import DonorList from './pages/DonorList';
 import Register from './pages/Register';
+import EmergencyRequest from './pages/EmergencyRequest';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/donors" element={<DonorList />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/emergency" element={<EmergencyRequest />} />
         </Routes>
         
         <footer className="bg-white border-t py-8 mt-auto">
