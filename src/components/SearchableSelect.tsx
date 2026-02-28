@@ -39,30 +39,32 @@ export default function SearchableSelect({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
+      {label && <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">{label}</label>}
       
       <button
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full bg-white border rounded-lg p-2.5 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-red-500 ${
-          disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'border-gray-300 text-gray-900'
+        className={`w-full bg-white dark:bg-slate-900 border rounded-xl p-3 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all ${
+          disabled 
+            ? 'bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-gray-600 cursor-not-allowed border-gray-100 dark:border-gray-800' 
+            : 'border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white'
         }`}
       >
-        <span className={!value ? "text-gray-500" : ""}>
+        <span className={!value ? "text-gray-400 dark:text-gray-500 font-medium" : "font-semibold"}>
           {value || placeholder}
         </span>
-        <ChevronDown className="h-4 w-4 text-gray-500" />
+        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden flex flex-col">
-          <div className="p-2 border-b border-gray-100 sticky top-0 bg-white">
+        <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl max-h-72 overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="p-3 border-b border-gray-50 dark:border-gray-700 sticky top-0 bg-white dark:bg-slate-800">
             <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
-                className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-red-500"
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-slate-900 border border-gray-100 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand text-gray-900 dark:text-white"
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -71,16 +73,18 @@ export default function SearchableSelect({
             </div>
           </div>
           
-          <div className="overflow-y-auto flex-1">
+          <div className="overflow-y-auto flex-1 py-1 custom-scrollbar">
             {filteredOptions.length === 0 ? (
-              <div className="p-3 text-sm text-gray-500 text-center">No results found</div>
+              <div className="p-6 text-sm text-gray-400 dark:text-gray-500 text-center font-medium">No results found</div>
             ) : (
               filteredOptions.map((option) => (
                 <button
                   key={option}
                   type="button"
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-red-50 flex items-center justify-between ${
-                    value === option ? 'bg-red-50 text-red-700 font-medium' : 'text-gray-700'
+                  className={`w-full text-left px-4 py-3 text-sm hover:bg-brand-light dark:hover:bg-brand/10 flex items-center justify-between transition-colors ${
+                    value === option 
+                      ? 'bg-brand-light dark:bg-brand/10 text-brand font-bold' 
+                      : 'text-gray-700 dark:text-gray-300 font-medium'
                   }`}
                   onClick={() => {
                     onChange(option);

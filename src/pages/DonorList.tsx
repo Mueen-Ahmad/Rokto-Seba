@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Search, MapPin, Droplet, Phone, Calendar, User } from 'lucide-react';
+import { Search, MapPin, Droplet, Phone, Calendar, User, AlertCircle } from 'lucide-react';
 import { DIVISIONS, DISTRICTS } from '../lib/locations';
 import SearchableSelect from '../components/SearchableSelect';
 
@@ -87,14 +87,16 @@ export default function DonorList() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl font-sans">রক্তদাতা খুঁজুন (Find Donors)</h2>
-        <p className="mt-4 text-lg text-gray-600">
+        <h2 className="text-3xl font-black text-gray-900 dark:text-white sm:text-5xl">রক্তদাতা খুঁজুন (Find Donors)</h2>
+        <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 font-medium">
           আপনার প্রয়োজনীয় রক্তের গ্রুপ এবং এলাকা নির্বাচন করুন
         </p>
         {!isConnected && (
-          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg inline-block text-left">
-            <p className="text-yellow-800 text-sm font-medium">⚠️ Supabase Not Connected</p>
-            <p className="text-yellow-700 text-xs mt-1">
+          <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/30 rounded-2xl inline-block text-left">
+            <p className="text-yellow-800 dark:text-yellow-400 text-sm font-bold flex items-center gap-2">
+              <AlertCircle className="h-4 w-4" /> Supabase Not Connected
+            </p>
+            <p className="text-yellow-700 dark:text-yellow-500 text-xs mt-1">
               Showing mock data. To connect real database, set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.
             </p>
           </div>
@@ -102,14 +104,14 @@ export default function DonorList() {
       </div>
 
       {/* Search Filters */}
-      <div className="bg-white p-6 rounded-xl shadow-md mb-8 border border-gray-100">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">রক্তের গ্রুপ (Blood Group)</label>
+      <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-xl mb-12 border border-gray-100 dark:border-gray-700">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">রক্তের গ্রুপ (Blood Group)</label>
             <select
               value={bloodGroup}
               onChange={(e) => setBloodGroup(e.target.value)}
-              className="block w-full rounded-lg border-gray-300 border p-2.5 focus:border-red-500 focus:ring-red-500"
+              className="block w-full rounded-xl border-gray-200 dark:border-gray-700 dark:bg-slate-900 dark:text-white px-4 py-2.5 focus:ring-2 focus:ring-brand/20 focus:border-brand outline-none transition-all"
             >
               <option value="">সকল গ্রুপ (All)</option>
               <option value="A+">A+</option>
@@ -143,9 +145,9 @@ export default function DonorList() {
           <div className="flex items-end">
             <button
               onClick={fetchDonors}
-              className="w-full bg-red-600 text-white px-4 py-2.5 rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center justify-center gap-2"
+              className="w-full btn-primary flex items-center justify-center gap-2 py-3"
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-5 w-5" />
               খুঁজুন (Search)
             </button>
           </div>
@@ -154,56 +156,67 @@ export default function DonorList() {
 
       {/* Results */}
       {loading ? (
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+        <div className="text-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand mx-auto"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {donors.map((donor) => (
-            <div key={donor.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{donor.name}</h3>
-                    <div className="flex items-center text-gray-500 text-sm mt-1">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {donor.district}, {donor.division}
+            <div key={donor.id} className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 group">
+              <div className="p-8">
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-brand-light dark:bg-brand/10 flex items-center justify-center">
+                      <User className="h-6 w-6 text-brand" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-brand transition-colors">{donor.name}</h3>
+                      <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs font-medium mt-1">
+                        <MapPin className="h-3.5 w-3.5 mr-1.5 text-brand" />
+                        {donor.district}, {donor.division}
+                      </div>
                     </div>
                   </div>
-                  <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-red-100 text-red-700 font-bold text-sm ring-2 ring-white">
+                  <div className="inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-brand text-white font-black text-lg shadow-lg shadow-brand/20">
                     {donor.blood_group}
-                  </span>
+                  </div>
                 </div>
                 
-                <div className="space-y-3">
-                  <div className="flex items-center text-gray-600 text-sm">
-                    <User className="h-4 w-4 mr-2 text-gray-400" />
-                    Age: {donor.age || 'N/A'}
+                <div className="space-y-4 bg-gray-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/50">
+                  <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm font-semibold">
+                    <User className="h-4 w-4 mr-3 text-brand" />
+                    বয়স: {donor.age || 'N/A'} বছর
                   </div>
-                  <div className="flex items-center text-gray-600 text-sm">
-                    <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                  <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm font-semibold">
+                    <Phone className="h-4 w-4 mr-3 text-brand" />
                     {donor.phone}
                   </div>
-                  <div className="flex items-center text-gray-600 text-sm">
-                    <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                    Last Donation: {donor.last_donation_date || 'N/A'}
+                  <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm font-semibold">
+                    <Calendar className="h-4 w-4 mr-3 text-brand" />
+                    শেষ রক্তদান: {donor.last_donation_date || 'N/A'}
                   </div>
                 </div>
 
-                <div className="mt-6">
-                  <button className="w-full bg-white border border-red-200 text-red-700 py-2 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium">
-                    যোগাযোগ করুন (Contact)
-                  </button>
+                <div className="mt-8">
+                  <a 
+                    href={`tel:${donor.phone}`}
+                    className="w-full btn-secondary flex items-center justify-center gap-2 py-3"
+                  >
+                    <Phone className="h-4 w-4" />
+                    যোগাযোগ করুন
+                  </a>
                 </div>
               </div>
             </div>
           ))}
           
           {donors.length === 0 && (
-            <div className="col-span-full text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-              <Droplet className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900">কোনো রক্তদাতা পাওয়া যায়নি</h3>
-              <p className="text-gray-500">অন্য কোনো এলাকা বা গ্রুপ দিয়ে চেষ্টা করুন</p>
+            <div className="col-span-full text-center py-24 bg-white dark:bg-slate-800 rounded-3xl border border-dashed border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-gray-50 dark:bg-slate-900 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Droplet className="h-10 w-10 text-gray-300 dark:text-gray-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">কোনো রক্তদাতা পাওয়া যায়নি</h3>
+              <p className="text-gray-500 dark:text-gray-400 font-medium">অন্য কোনো এলাকা বা গ্রুপ দিয়ে চেষ্টা করুন</p>
             </div>
           )}
         </div>
